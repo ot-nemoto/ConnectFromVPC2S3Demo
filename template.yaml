@@ -7,6 +7,8 @@ Parameters:
   InstanceType:
     Type: String
     Default: t2.micro
+  KeyName:
+    Type: AWS::EC2::KeyPair::KeyName
 
 Resources:
   Vpc:
@@ -100,6 +102,7 @@ Resources:
     Properties:
       ImageId: !Ref AMIId
       InstanceType: !Ref InstanceType
+      KeyName: !Ref KeyName
       NetworkInterfaces:
       - AssociatePublicIpAddress: true
         DeviceIndex: 0
