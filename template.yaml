@@ -100,7 +100,6 @@ Resources:
     Properties:
       ImageId: !Ref AMIId
       InstanceType: !Ref InstanceType
-      IamInstanceProfile: !Ref InstanceProfile
       NetworkInterfaces:
       - AssociatePublicIpAddress: true
         DeviceIndex: 0
@@ -131,3 +130,7 @@ Resources:
       Path: /
       Roles:
       - !Ref InstanceServerRole
+
+Outputs:
+  ManagedInstancesUrl:
+    Value: !Sub "https://${AWS::Region}.console.aws.amazon.com/systems-manager/managed-instances?region=${AWS::Region}"
