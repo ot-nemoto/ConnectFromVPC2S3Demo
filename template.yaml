@@ -49,37 +49,12 @@ Resources:
     Properties:
       InternetGatewayId: !Ref InternetGateway
       VpcId: !Ref Vpc
-  PublicRoute1:
+  PublicRoute:
     Type: AWS::EC2::Route
     Properties:
       GatewayId: !Ref InternetGateway
       DestinationCidrBlock: 0.0.0.0/0
       RouteTableId: !Ref PublicRouteTable
-
-  ######                                         #     #
-  #     # #####  # #    #   ##   ##### ######    ##    # ###### ##### #    #  ####  #####  #    #
-  #     # #    # # #    #  #  #    #   #         # #   # #        #   #    # #    # #    # #   #
-  ######  #    # # #    # #    #   #   #####     #  #  # #####    #   #    # #    # #    # ####
-  #       #####  # #    # ######   #   #         #   # # #        #   # ## # #    # #####  #  #
-  #       #   #  #  #  #  #    #   #   #         #    ## #        #   ##  ## #    # #   #  #   #
-  #       #    # #   ##   #    #   #   ######    #     # ######   #   #    #  ####  #    # #    #
-  PrivateSubnet:
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId: !Ref Vpc
-      CidrBlock: 10.38.1.0/24
-      AvailabilityZone: !Select
-      - 1
-      - Fn::GetAZs: !Ref AWS::Region
-  PrivateRouteTable:
-    Type: AWS::EC2::RouteTable
-    Properties:
-      VpcId: !Ref Vpc
-  PrivateRouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      RouteTableId: !Ref PrivateRouteTable
-      SubnetId: !Ref PrivateSubnet
 
   PublicInstance:
     Type: AWS::EC2::Instance
@@ -96,23 +71,6 @@ Resources:
       Tags:
       - Key: Name
         Value: PublicInstance
-
-  PrivateInstance:
-    Type: AWS::EC2::Instance
-    Properties:
-      ImageId: !Ref AMIId
-      InstanceType: !Ref InstanceType
-      KeyName: !Ref KeyName
-      NetworkInterfaces:
-      - AssociatePublicIpAddress: true
-        DeviceIndex: 0
-        GroupSet:
-        - !GetAtt Vpc.DefaultSecurityGroup
-        SubnetId: !Ref PrivateSubnet
-      Tags:
-      - Key: Name
-        Value: PrivateInstance
-
   InstanceServerRole:
     Type: AWS::IAM::Role
     Properties:
@@ -134,6 +92,104 @@ Resources:
       Roles:
       - !Ref InstanceServerRole
 
+  ######                                         #     #                                               #
+  #     # #####  # #    #   ##   ##### ######    ##    # ###### ##### #    #  ####  #####  #    #     ##
+  #     # #    # # #    #  #  #    #   #         # #   # #        #   #    # #    # #    # #   #     # #
+  ######  #    # # #    # #    #   #   #####     #  #  # #####    #   #    # #    # #    # ####        #
+  #       #####  # #    # ######   #   #         #   # # #        #   # ## # #    # #####  #  #        #
+  #       #   #  #  #  #  #    #   #   #         #    ## #        #   ##  ## #    # #   #  #   #       #
+  #       #    # #   ##   #    #   #   ######    #     # ######   #   #    #  ####  #    # #    #    #####
+  PrivateSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref Vpc
+      CidrBlock: 10.38.1.0/24
+      AvailabilityZone: !Select
+      - 1
+      - Fn::GetAZs: !Ref AWS::Region
+  PrivateRouteTable1:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref Vpc
+  PrivateRouteTableAssociation1:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable1
+      SubnetId: !Ref PrivateSubnet1
+  VPCEndpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:
+      VpcId: !Ref Vpc
+      RouteTableIds:
+      - !Ref PrivateRouteTable1
+      ServiceName: !Sub "com.amazonaws.${AWS::Region}.s3"
+
+  PrivateInstance1:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref AMIId
+      InstanceType: !Ref InstanceType
+      KeyName: !Ref KeyName
+      NetworkInterfaces:
+      - AssociatePublicIpAddress: true
+        DeviceIndex: 0
+        GroupSet:
+        - !GetAtt Vpc.DefaultSecurityGroup
+        SubnetId: !Ref PrivateSubnet1
+      Tags:
+      - Key: Name
+        Value: PrivateInstance1
+
+  ######                                         #     #                                              #####
+  #     # #####  # #    #   ##   ##### ######    ##    # ###### ##### #    #  ####  #####  #    #    #     #
+  #     # #    # # #    #  #  #    #   #         # #   # #        #   #    # #    # #    # #   #           #
+  ######  #    # # #    # #    #   #   #####     #  #  # #####    #   #    # #    # #    # ####       #####
+  #       #####  # #    # ######   #   #         #   # # #        #   # ## # #    # #####  #  #      #
+  #       #   #  #  #  #  #    #   #   #         #    ## #        #   ##  ## #    # #   #  #   #     #
+  #       #    # #   ##   #    #   #   ######    #     # ######   #   #    #  ####  #    # #    #    #######
+  PrivateSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref Vpc
+      CidrBlock: 10.38.2.0/24
+      AvailabilityZone: !Select
+      - 1
+      - Fn::GetAZs: !Ref AWS::Region
+  PrivateRouteTable2:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref Vpc
+  PrivateRouteTableAssociation2:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable2
+      SubnetId: !Ref PrivateSubnet2
+
+  PrivateInstance2:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref AMIId
+      InstanceType: !Ref InstanceType
+      KeyName: !Ref KeyName
+      NetworkInterfaces:
+      - AssociatePublicIpAddress: true
+        DeviceIndex: 0
+        GroupSet:
+        - !GetAtt Vpc.DefaultSecurityGroup
+        SubnetId: !Ref PrivateSubnet2
+      Tags:
+      - Key: Name
+        Value: PrivateInstance2
+
+  WebsiteBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      WebsiteConfiguration:
+        IndexDocument: index.html
+      AccessControl: PublicRead
+
 Outputs:
   ManagedInstancesUrl:
     Value: !Sub "https://${AWS::Region}.console.aws.amazon.com/systems-manager/managed-instances?region=${AWS::Region}"
+  WebsiteBucket:
+    Value: !Ref WebsiteBucket

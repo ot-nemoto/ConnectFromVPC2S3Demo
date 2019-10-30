@@ -21,11 +21,20 @@ aws cloudformation create-stack \
 
 ※KeyNameは自身の環境で作成済みのKeyNameを指定（未作成の場合は要作成）
 
+```sh
+WEBSITE_BUCKET=$(aws cloudformation describe-stacks \
+    --stack-name vpc-endpoint-demo \
+    --query 'Stacks[].Outputs[?OutputKey==`WebsiteBucket`].OutputValue' \
+    --output text)
+echo ${WEBSITE_BUCKET}
+  # (e.g.) vpc-endpoint-demo-websitebucket-7q5fuawbt02h 
+```
+
 ## 検証
 
 Public Instanceへログイン
 
-- SSMのManaged Instancesから、インスタンスを選択し、**Session Start** でログイン
+- SSMのManaged Instancesから、インスタンスを選択し、**Start Session** でログイン
 
 Private Instanceへログイン
 
