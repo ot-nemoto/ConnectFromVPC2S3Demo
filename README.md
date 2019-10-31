@@ -7,7 +7,7 @@
 
 ## 構成
 
-![構成](https://github.com/ot-nemoto/ConnectToS3WebsiteDemo/blob/images/ConnectToS3WebsiteDemo.png)
+![構成](https://github.com/ot-nemoto/ConnectToS3WebsiteDemo/blob/images/ConnectToS3WebsiteDemo_v2.png)
 
 ## デプロイ
 
