@@ -206,6 +206,78 @@ Resources:
       - Key: Name
         Value: PrivateInstance2
 
+  ######                                   #     #                                              #####
+  #     # #    # #####  #      #  ####     ##    # ###### ##### #    #  ####  #####  #    #    #     #
+  #     # #    # #    # #      # #    #    # #   # #        #   #    # #    # #    # #   #           #
+  ######  #    # #####  #      # #         #  #  # #####    #   #    # #    # #    # ####       #####
+  #       #    # #    # #      # #         #   # # #        #   # ## # #    # #####  #  #            #
+  #       #    # #    # #      # #    #    #    ## #        #   ##  ## #    # #   #  #   #     #     #
+  #        ####  #####  ###### #  ####     #     # ######   #   #    #  ####  #    # #    #     #####
+  PrivateSubnet3:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref Vpc
+      CidrBlock: 10.38.3.0/24
+      AvailabilityZone: !Select
+      - 0
+      - Fn::GetAZs: !Ref AWS::Region
+      Tags:
+      - Key: Name
+        Value: VpcEndpointDemo-PrivateSubnet3
+  PrivateRouteTable3:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref Vpc
+      Tags:
+      - Key: Name
+        Value: VpcEndpointDemo-PrivateRouteTable3
+  PrivateRouteTableAssociation3:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable3
+      SubnetId: !Ref PrivateSubnet3
+  NatGatewayEIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+  NatGateway:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId: !GetAtt NatGatewayEIP.AllocationId
+      SubnetId: !Ref PublicSubnet
+      Tags:
+      - Key: Name
+        Value: VpcEndpointDemo-NatGateway
+  PrivateRoute3:
+    Type: AWS::EC2::Route
+    Properties:
+      NatGatewayId: !Ref NatGateway
+      DestinationCidrBlock: 0.0.0.0/0
+      RouteTableId: !Ref PrivateRouteTable3
+
+  PrivateInstance3:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref AMIId
+      InstanceType: !Ref InstanceType
+      KeyName: !Ref KeyName
+      NetworkInterfaces:
+      - AssociatePublicIpAddress: true
+        DeviceIndex: 0
+        GroupSet:
+        - !GetAtt Vpc.DefaultSecurityGroup
+        SubnetId: !Ref PrivateSubnet3
+      Tags:
+      - Key: Name
+        Value: PrivateInstance3
+
+  #     #                #####
+  #  #  # ###### #####  #     # # ##### ######
+  #  #  # #      #    # #       #   #   #
+  #  #  # #####  #####   #####  #   #   #####
+  #  #  # #      #    #       # #   #   #
+  #  #  # #      #    # #     # #   #   #
+   ## ##  ###### #####   #####  #   #   ######
   WebsiteBucket:
     Type: AWS::S3::Bucket
     Properties:
