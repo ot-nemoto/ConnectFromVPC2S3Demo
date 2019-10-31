@@ -66,3 +66,61 @@ chmod 600 key.pem
 
 ssh -i key.pem ec2-user@PRIVATE_INSTANCE_PRIVATE_IP
 ```
+
+## 結果
+
+**デモサイトへの接続許可したCIDR**からのアクセス
+
+![](https://github.com/ot-nemoto/ConnectToS3WebsiteDemo/blob/images/HelloConnectToS3WebsiteDemo.png)
+
+**PublicSubnet**のインスタンスからのアクセス
+
+```sh
+curl --connect-timeout 5 http://vpc-endpoint-demo-websitebucket-ldj25c96umm1.s3-website-ap-northeast-1.amazonaws.com/
+  # <html>
+  # <head><title>403 Forbidden</title></head>
+  # <body>
+  # <h1>403 Forbidden</h1>
+  # <ul>
+  # <li>Code: AccessDenied</li>
+  # <li>Message: Access Denied</li>
+  # <li>RequestId: C89772684B5AE2D9</li>
+  # <li>HostId: 6nGLklWcP1b6XsaoaPEjQOjTnEc4q8LEFJP6diLTeLLxfDReXGU8aiv/bp6l4jpWLL8dL4/WBOY=</li>
+  # </ul>
+  # <hr/>
+  # </body>
+  # </html>
+```
+
+**PrivateSubnet1**のインスタンスからのアクセス
+
+```sh
+curl --connect-timeout 5 http://vpc-endpoint-demo-websitebucket-ldj25c96umm1.s3-website-ap-northeast-1.amazonaws.com/
+  # <h1>Hello VpcEndpointDemo</h1>
+```
+
+**PrivateSubnet2**のインスタンスからのアクセス
+
+```sh
+curl --connect-timeout 5 http://vpc-endpoint-demo-websitebucket-ldj25c96umm1.s3-website-ap-northeast-1.amazonaws.com/
+  # curl: (28) Connection timed out after 5001 milliseconds
+```
+
+**PrivateSubnet3**のインスタンスからのアクセス
+
+```sh
+curl --connect-timeout 5 http://vpc-endpoint-demo-websitebucket-ldj25c96umm1.s3-website-ap-northeast-1.amazonaws.com/
+  # <html>
+  # <head><title>403 Forbidden</title></head>
+  # <body>
+  # <h1>403 Forbidden</h1>
+  # <ul>
+  # <li>Code: AccessDenied</li>
+  # <li>Message: Access Denied</li>
+  # <li>RequestId: D9C1604E310E423F</li>
+  # <li>HostId: VZRhKyKCO//IpMAm5BmggwzC3zD2UziLugN0V1/ljKfHuWmbA13NvWfP/naHcwTOJ/4Ul2/tOK0=</li>
+  # </ul>
+  # <hr/>
+  # </body>
+  # </html>
+```
