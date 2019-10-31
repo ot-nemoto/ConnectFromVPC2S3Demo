@@ -101,7 +101,7 @@ curl --connect-timeout 5 http://connect-to-s3-website-demo-websitebucket-ldj25c9
 
 ```sh
 curl --connect-timeout 5 http://connect-to-s3-website-demo-websitebucket-ldj25c96umm1.s3-website-ap-northeast-1.amazonaws.com/
-  # <h1>Hello VpcEndpointDemo</h1>
+  # <h1>Hello ConnectToS3WebsiteDemo</h1>
 ```
 
 **PrivateSubnet2**のインスタンスからのアクセス
