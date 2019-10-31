@@ -6,6 +6,9 @@
 - Bucketポリシーは、**SourceCidrIp**で指定したCIDRからの接続、および当該VPCからの接続を許可している
 
 ## 構成
+
+![構成](https://github.com/ot-nemoto/ConnectToS3WebsiteDemo/blob/images/ConnectToS3WebsiteDemo.png)
+
 ## デプロイ
 
 **Properties**
