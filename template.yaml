@@ -22,7 +22,7 @@ Resources:
       EnableDnsHostnames: true
       Tags:
       - Key: Name
-        Value: VpcEndpointDemo-Vpc
+        Value: ConnectToS3WebsiteDemo-Vpc
 
   ######                                   #     #
   #     # #    # #####  #      #  ####     ##    # ###### ##### #    #  ####  #####  #    #
@@ -41,14 +41,14 @@ Resources:
       - Fn::GetAZs: !Ref AWS::Region
       Tags:
       - Key: Name
-        Value: VpcEndpointDemo-PublicSubnet
+        Value: ConnectToS3WebsiteDemo-PublicSubnet
   PublicRouteTable:
     Type: AWS::EC2::RouteTable
     Properties:
       VpcId: !Ref Vpc
       Tags:
       - Key: Name
-        Value: VpcEndpointDemo-PublicRouteTable
+        Value: ConnectToS3WebsiteDemo-PublicRouteTable
   PublicRouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
@@ -122,14 +122,14 @@ Resources:
       - Fn::GetAZs: !Ref AWS::Region
       Tags:
       - Key: Name
-        Value: VpcEndpointDemo-PrivateSubnet1
+        Value: ConnectToS3WebsiteDemo-PrivateSubnet1
   PrivateRouteTable1:
     Type: AWS::EC2::RouteTable
     Properties:
       VpcId: !Ref Vpc
       Tags:
       - Key: Name
-        Value: VpcEndpointDemo-PrivateRouteTable1
+        Value: ConnectToS3WebsiteDemo-PrivateRouteTable1
   PrivateRouteTableAssociation1:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
@@ -201,14 +201,14 @@ Resources:
       - Fn::GetAZs: !Ref AWS::Region
       Tags:
       - Key: Name
-        Value: VpcEndpointDemo-PrivateSubnet2
+        Value: ConnectToS3WebsiteDemo-PrivateSubnet2
   PrivateRouteTable2:
     Type: AWS::EC2::RouteTable
     Properties:
       VpcId: !Ref Vpc
       Tags:
       - Key: Name
-        Value: VpcEndpointDemo-PrivateRouteTable2
+        Value: ConnectToS3WebsiteDemo-PrivateRouteTable2
   PrivateRouteTableAssociation2:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
@@ -248,14 +248,14 @@ Resources:
       - Fn::GetAZs: !Ref AWS::Region
       Tags:
       - Key: Name
-        Value: VpcEndpointDemo-PrivateSubnet3
+        Value: ConnectToS3WebsiteDemo-PrivateSubnet3
   PrivateRouteTable3:
     Type: AWS::EC2::RouteTable
     Properties:
       VpcId: !Ref Vpc
       Tags:
       - Key: Name
-        Value: VpcEndpointDemo-PrivateRouteTable3
+        Value: ConnectToS3WebsiteDemo-PrivateRouteTable3
   PrivateRouteTableAssociation3:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
@@ -272,7 +272,7 @@ Resources:
       SubnetId: !Ref PublicSubnet
       Tags:
       - Key: Name
-        Value: VpcEndpointDemo-NatGateway
+        Value: ConnectToS3WebsiteDemo-NatGateway
   PrivateRoute3:
     Type: AWS::EC2::Route
     Properties:
