@@ -22,7 +22,7 @@
 
 ```sh
 aws cloudformation create-stack \
-    --stack-name vpc-endpoint-demo \
+    --stack-name connect-to-s3-website-demo \
     --capabilities CAPABILITY_IAM \
     --parameters ParameterKey=KeyName,ParameterValue=KEY_NAME \
     --template-body file://template.yaml
@@ -34,16 +34,16 @@ aws cloudformation create-stack \
 
 ```sh
 WEBSITE_BUCKET=$(aws cloudformation describe-stacks \
-    --stack-name vpc-endpoint-demo \
+    --stack-name connect-to-s3-website-demo \
     --query 'Stacks[].Outputs[?OutputKey==`WebsiteBucket`].OutputValue' \
     --output text)
 echo ${WEBSITE_BUCKET}
   # (e.g.)
-  # vpc-endpoint-demo-websitebucket-7q5fuawbt02h
+  # connect-to-s3-website-demo-websitebucket-7q5fuawbt02h
 
 aws s3 cp --content-type text/html index.html s3://${WEBSITE_BUCKET}
   # (e.g.)
-  # upload: ./index.html to s3://vpc-endpoint-demo-websitebucket-7q5fuawbt02h/index.html
+  # upload: ./index.html to s3://connect-to-s3-website-demo-websitebucket-7q5fuawbt02h/index.html
 ```
 
 ## ログイン
@@ -72,6 +72,8 @@ ssh -i key.pem ec2-user@PRIVATE_INSTANCE_PRIVATE_IP
 
 ## 結果
 
+URLは構築した環境により異なります、CloudFormationのOutpusの**WebsiteUrl**または**WebSiteSecureUrl**で確認してください。
+
 **デモサイトへの接続許可したCIDR**からのアクセス
 
 ![](https://github.com/ot-nemoto/ConnectToS3WebsiteDemo/blob/images/HelloConnectToS3WebsiteDemo.png)
@@ -79,7 +81,7 @@ ssh -i key.pem ec2-user@PRIVATE_INSTANCE_PRIVATE_IP
 **PublicSubnet**のインスタンスからのアクセス
 
 ```sh
-curl --connect-timeout 5 http://vpc-endpoint-demo-websitebucket-ldj25c96umm1.s3-website-ap-northeast-1.amazonaws.com/
+curl --connect-timeout 5 http://connect-to-s3-website-demo-websitebucket-ldj25c96umm1.s3-website-ap-northeast-1.amazonaws.com/
   # <html>
   # <head><title>403 Forbidden</title></head>
   # <body>
@@ -98,21 +100,21 @@ curl --connect-timeout 5 http://vpc-endpoint-demo-websitebucket-ldj25c96umm1.s3-
 **PrivateSubnet1**のインスタンスからのアクセス
 
 ```sh
-curl --connect-timeout 5 http://vpc-endpoint-demo-websitebucket-ldj25c96umm1.s3-website-ap-northeast-1.amazonaws.com/
+curl --connect-timeout 5 http://connect-to-s3-website-demo-websitebucket-ldj25c96umm1.s3-website-ap-northeast-1.amazonaws.com/
   # <h1>Hello VpcEndpointDemo</h1>
 ```
 
 **PrivateSubnet2**のインスタンスからのアクセス
 
 ```sh
-curl --connect-timeout 5 http://vpc-endpoint-demo-websitebucket-ldj25c96umm1.s3-website-ap-northeast-1.amazonaws.com/
+curl --connect-timeout 5 http://connect-to-s3-website-demo-websitebucket-ldj25c96umm1.s3-website-ap-northeast-1.amazonaws.com/
   # curl: (28) Connection timed out after 5001 milliseconds
 ```
 
 **PrivateSubnet3**のインスタンスからのアクセス
 
 ```sh
-curl --connect-timeout 5 http://vpc-endpoint-demo-websitebucket-ldj25c96umm1.s3-website-ap-northeast-1.amazonaws.com/
+curl --connect-timeout 5 http://connect-to-s3-website-demo-websitebucket-ldj25c96umm1.s3-website-ap-northeast-1.amazonaws.com/
   # <html>
   # <head><title>403 Forbidden</title></head>
   # <body>
@@ -134,11 +136,11 @@ curl --connect-timeout 5 http://vpc-endpoint-demo-websitebucket-ldj25c96umm1.s3-
 
 ```sh
 LOGGING_BUCKET=$(aws cloudformation describe-stacks \
-    --stack-name vpc-endpoint-demo \
+    --stack-name connect-to-s3-website-demo \
     --query 'Stacks[].Outputs[?OutputKey==`WebsiteLoggingBucket`].OutputValue' \
     --output text)
 echo ${LOGGING_BUCKET}
-  # (e.g.) vpc-endpoint-demo-websiteloggingbucket-1gcf53tbvqv6n
+  # (e.g.) connect-to-s3-website-demo-websiteloggingbucket-1gcf53tbvqv6n
 
 mkdir logs
 aws s3 cp s3://${LOGGING_BUCKET} logs --recursive
@@ -148,10 +150,10 @@ aws s3 cp s3://${LOGGING_BUCKET} logs --recursive
 
 ```sh
 cat logs/* | grep index.html
-  # 8e90407bc27c842be769d179392a2c331f4dfd979e258d3e84fc75487a5f0586 vpc-endpoint-demo-websitebucket-ldj25c96umm1 [31/Oct/2019:02:54:43 +0000] xx.xx.xx.xx - 98A3184CA55C8A08 WEBSITE.GET.OBJECT index.html "GET / HTTP/1.1" 200 - 38 38 41 40 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.70 Safari/537.36" - iuV2wfA6Pfxi3pXckYDjG3W5pLAGBLcRs13k3OcBFzWlxYsVoG+9c1R+VCzg7lGNBm8Q71e+oO8= - - - vpc-endpoint-demo-websitebucket-ldj25c96umm1.s3-website-ap-northeast-1.amazonaws.com -
-  # 8e90407bc27c842be769d179392a2c331f4dfd979e258d3e84fc75487a5f0586 vpc-endpoint-demo-websitebucket-ldj25c96umm1 [31/Oct/2019:02:56:21 +0000] 52.198.48.49 - 72B6E8BCF735F705 WEBSITE.GET.OBJECT index.html "GET / HTTP/1.1" 403 AccessDenied 303 - 23 - "-" "curl/7.61.1" - Jf2w98/R9W3TJHldf/+u2OYOoco/Jp8ssO8mVjQG9YpTJHPmUBFSmdCPX9vUZiaEHvh/iIP0crw= - - - vpc-endpoint-demo-websitebucket-ldj25c96umm1.s3-website-ap-northeast-1.amazonaws.com -
-  # 8e90407bc27c842be769d179392a2c331f4dfd979e258d3e84fc75487a5f0586 vpc-endpoint-demo-websitebucket-ldj25c96umm1 [31/Oct/2019:02:56:38 +0000] 10.38.1.122 - F9D92E75D177AE8D WEBSITE.GET.OBJECT index.html "GET / HTTP/1.1" 200 - 38 38 42 42 "-" "curl/7.61.1" - 7GUGYssXuKGrzSndTeQN/OPyqdUjDo1IZ2xEKxtkm8EOH9RSU0jETi9U/hvMCo/5fSR6AVVZPdQ= - - - vpc-endpoint-demo-websitebucket-ldj25c96umm1.s3-website-ap-northeast-1.amazonaws.com -
-  # 8e90407bc27c842be769d179392a2c331f4dfd979e258d3e84fc75487a5f0586 vpc-endpoint-demo-websitebucket-ldj25c96umm1 [31/Oct/2019:02:57:11 +0000] 18.183.0.212 - 61D3B12411C2EA88 WEBSITE.GET.OBJECT index.html "GET / HTTP/1.1" 403 AccessDenied 303 - 27 - "-" "curl/7.61.1" - BWDuiznQEfeWR4Ui30J64rrzozls4gzDJ2kmOPllWnkxOZOEirPJIZagkIuaBvyfyc97mdo23nc= - - - vpc-endpoint-demo-websitebucket-ldj25c96umm1.s3-website-ap-northeast-1.amazonaws.com -
+  # 8e90407bc27c842be769d179392a2c331f4dfd979e258d3e84fc75487a5f0586 connect-to-s3-website-demo-websitebucket-ldj25c96umm1 [31/Oct/2019:02:54:43 +0000] xx.xx.xx.xx - 98A3184CA55C8A08 WEBSITE.GET.OBJECT index.html "GET / HTTP/1.1" 200 - 38 38 41 40 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.70 Safari/537.36" - iuV2wfA6Pfxi3pXckYDjG3W5pLAGBLcRs13k3OcBFzWlxYsVoG+9c1R+VCzg7lGNBm8Q71e+oO8= - - - connect-to-s3-website-demo-websitebucket-ldj25c96umm1.s3-website-ap-northeast-1.amazonaws.com -
+  # 8e90407bc27c842be769d179392a2c331f4dfd979e258d3e84fc75487a5f0586 connect-to-s3-website-demo-websitebucket-ldj25c96umm1 [31/Oct/2019:02:56:21 +0000] 52.198.48.49 - 72B6E8BCF735F705 WEBSITE.GET.OBJECT index.html "GET / HTTP/1.1" 403 AccessDenied 303 - 23 - "-" "curl/7.61.1" - Jf2w98/R9W3TJHldf/+u2OYOoco/Jp8ssO8mVjQG9YpTJHPmUBFSmdCPX9vUZiaEHvh/iIP0crw= - - - connect-to-s3-website-demo-websitebucket-ldj25c96umm1.s3-website-ap-northeast-1.amazonaws.com -
+  # 8e90407bc27c842be769d179392a2c331f4dfd979e258d3e84fc75487a5f0586 connect-to-s3-website-demo-websitebucket-ldj25c96umm1 [31/Oct/2019:02:56:38 +0000] 10.38.1.122 - F9D92E75D177AE8D WEBSITE.GET.OBJECT index.html "GET / HTTP/1.1" 200 - 38 38 42 42 "-" "curl/7.61.1" - 7GUGYssXuKGrzSndTeQN/OPyqdUjDo1IZ2xEKxtkm8EOH9RSU0jETi9U/hvMCo/5fSR6AVVZPdQ= - - - connect-to-s3-website-demo-websitebucket-ldj25c96umm1.s3-website-ap-northeast-1.amazonaws.com -
+  # 8e90407bc27c842be769d179392a2c331f4dfd979e258d3e84fc75487a5f0586 connect-to-s3-website-demo-websitebucket-ldj25c96umm1 [31/Oct/2019:02:57:11 +0000] 18.183.0.212 - 61D3B12411C2EA88 WEBSITE.GET.OBJECT index.html "GET / HTTP/1.1" 403 AccessDenied 303 - 27 - "-" "curl/7.61.1" - BWDuiznQEfeWR4Ui30J64rrzozls4gzDJ2kmOPllWnkxOZOEirPJIZagkIuaBvyfyc97mdo23nc= - - - connect-to-s3-website-demo-websitebucket-ldj25c96umm1.s3-website-ap-northeast-1.amazonaws.com -
 ```
 
 **xx.xx.xx.xx**
@@ -176,3 +178,22 @@ cat logs/* | grep index.html
 - PrivateSubnet3のインスタンスからのアクセス
 - NAT Gatewayからのアクセスは、NAT GatewayのEIPでアクセスしている
 - バケットポリシーで許可していないので**403**
+
+## クリーンアップ
+
+```sh
+WEBSITE_BUCKET=$(aws cloudformation describe-stacks \
+    --stack-name connect-to-s3-website-demo \
+    --query 'Stacks[].Outputs[?OutputKey==`WebsiteBucket`].OutputValue' \
+    --output text)
+aws s3 rm s3://${WEBSITE_BUCKET} --recursive
+
+LOGGING_BUCKET=$(aws cloudformation describe-stacks \
+    --stack-name connect-to-s3-website-demo \
+    --query 'Stacks[].Outputs[?OutputKey==`WebsiteLoggingBucket`].OutputValue' \
+    --output text)
+aws s3 rm s3://${LOGGING_BUCKET} --recursive
+
+aws cloudformation delete-stack \
+    --stack-name connect-to-s3-website-demo
+```
