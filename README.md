@@ -1,4 +1,4 @@
-# VpcEndpointDemo
+# ConnectToS3WebsiteDemo
 
 ## 概要
 ## 構成
@@ -10,6 +10,8 @@
 |--|--|--|--|
 |AMIId|String|ami-0ff21806645c5e492|インスタンスのマシンイメージID|
 |InstanceType|String|t2.micro|インスタンスタイプ|
+|KeyName|AWS::EC2::KeyPair::KeyName|*require*|キーペア名|
+|SourceCidrIp|String|0.0.0.0/0|デモサイトへの接続許可するCIDR|
 
 ```sh
 aws cloudformation create-stack \
@@ -21,22 +23,29 @@ aws cloudformation create-stack \
 
 ※KeyNameは自身の環境で作成済みのKeyNameを指定（未作成の場合は要作成）
 
+## デモサイトデプロイ
+
 ```sh
 WEBSITE_BUCKET=$(aws cloudformation describe-stacks \
     --stack-name vpc-endpoint-demo \
     --query 'Stacks[].Outputs[?OutputKey==`WebsiteBucket`].OutputValue' \
     --output text)
 echo ${WEBSITE_BUCKET}
-  # (e.g.) vpc-endpoint-demo-websitebucket-7q5fuawbt02h 
+  # (e.g.)
+  # vpc-endpoint-demo-websitebucket-7q5fuawbt02h
+
+aws s3 cp --content-type text/html index.html s3://${WEBSITE_BUCKET}
+  # (e.g.)
+  # upload: ./index.html to s3://vpc-endpoint-demo-websitebucket-7q5fuawbt02h/index.html
 ```
 
 ## 検証
 
-Public Instanceへログイン
+**Public Instance**へログイン
 
 - SSMのManaged Instancesから、インスタンスを選択し、**Start Session** でログイン
 
-Private Instanceへログイン
+**Private Instance**へログイン
 
 - Public Instanceにログインした状態で、キーをコピペしsshで接続
 
