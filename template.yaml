@@ -284,6 +284,12 @@ Resources:
       WebsiteConfiguration:
         IndexDocument: index.html
       AccessControl: PublicRead
+      LoggingConfiguration:
+        DestinationBucketName: !Ref WebsiteLoggingBucket
+  WebsiteLoggingBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      AccessControl: LogDeliveryWrite
   WebsiteBucketPolicy:
     Type: AWS::S3::BucketPolicy
     Properties:
@@ -323,3 +329,5 @@ Outputs:
     Value: !Ref WebsiteBucket
   WebsiteUrl:
     Value: !Sub "http://${WebsiteBucket}.s3-website-${AWS::Region}.amazonaws.com/"
+  WebsiteLoggingBucket:
+    Value: !Ref WebsiteLoggingBucket
