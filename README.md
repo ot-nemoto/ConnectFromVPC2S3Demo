@@ -69,6 +69,8 @@ ssh -i key.pem ec2-user@PRIVATE_INSTANCE_PRIVATE_IP
 
 ## 結果
 
+URLは構築した環境により異なります、CloudFormationのOutpusの**WebsiteUrl**または**WebSiteSecureUrl**で確認してください。
+
 **デモサイトへの接続許可したCIDR**からのアクセス
 
 ![](https://github.com/ot-nemoto/ConnectToS3WebsiteDemo/blob/images/HelloConnectToS3WebsiteDemo.png)
