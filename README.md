@@ -173,3 +173,22 @@ cat logs/* | grep index.html
 - PrivateSubnet3のインスタンスからのアクセス
 - NAT Gatewayからのアクセスは、NAT GatewayのEIPでアクセスしている
 - バケットポリシーで許可していないので**403**
+
+## クリーンアップ
+
+```sh
+WEBSITE_BUCKET=$(aws cloudformation describe-stacks \
+    --stack-name connect-to-s3-website-demo \
+    --query 'Stacks[].Outputs[?OutputKey==`WebsiteBucket`].OutputValue' \
+    --output text)
+aws s3 rm s3://${WEBSITE_BUCKET} --recursive
+
+LOGGING_BUCKET=$(aws cloudformation describe-stacks \
+    --stack-name connect-to-s3-website-demo \
+    --query 'Stacks[].Outputs[?OutputKey==`WebsiteLoggingBucket`].OutputValue' \
+    --output text)
+aws s3 rm s3://${LOGGING_BUCKET} --recursive
+
+aws cloudformation delete-stack \
+    --stack-name connect-to-s3-website-demo
+```
