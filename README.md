@@ -1,6 +1,10 @@
 # ConnectToS3WebsiteDemo
 
 ## 概要
+
+- S3でStatic website hostingした場合に、各インスタンスはどのような挙動をするのか検証するための環境を構築する
+- Bucketポリシーは、**SourceCidrIp**で指定したCIDRからの接続、および当該VPCからの接続を許可している
+
 ## 構成
 ## デプロイ
 
@@ -39,7 +43,7 @@ aws s3 cp --content-type text/html index.html s3://${WEBSITE_BUCKET}
   # upload: ./index.html to s3://vpc-endpoint-demo-websitebucket-7q5fuawbt02h/index.html
 ```
 
-## 検証
+## ログイン
 
 **Public Instance**へログイン
 
