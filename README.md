@@ -179,41 +179,6 @@ cat logs/* | grep index.html
 - NAT Gatewayからのアクセスは、NAT GatewayのEIPでアクセスしている
 - バケットポリシーで許可していないので**403**
 
-## ではどうするか
-
-- 今回のケースのように、仮に他のSubnetからVPC Endpoint経由で接続を行いたい場合には、リバースプロキシを使う
-- PrivateSubnet1のインスタンスにnginxをのせ、s3へリダイレクトさせる
-- 具体的には起動設定でnginxのインストールを設定を適用させている
-
-```sh
-#!/bin/bash
-
-yum update -y
-amazon-linux-extras install -y nginx1.12
-cat <<EOT > /etc/nginx/conf.d/s3.conf
-server {
-  listen 80;
-  server_name $(curl -s http://169.254.169.254/latest/meta-data/local-ipv4);
-  location / {
-    proxy_pass https://s3-ap-northeast-1.amazonaws.com/;
-  }
-}
-EOT
-systemctl start nginx
-systemctl enable nginx
-```
-
-- これであれば、他のSubnet（PrivateSubnet1以外）から、アクセスしたい場合には、以下のコマンドで接続可能
-
-```sh
-curl http://PRIVATE_INSTANCE1_PRIVATE_IP/BUCKET_NAME/OBJECT_ID
-
-# (e.g.)
-# curl http://10.38.1.122/connect-to-s3-website-demo-websitebucket-ldj25c96umm1/index.html
-```
-
-- この方法は、例えばVPNで接続先からS3へアクセスしたい場合には、直接s3のURLを指定出来ないので、リバースプロキシで対応することになる（のだろうか？）
-
 ## クリーンアップ
 
 ```sh
